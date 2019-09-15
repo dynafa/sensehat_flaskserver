@@ -21,7 +21,7 @@ from pgdb import connect
 
 # initialization
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'Taiyanggongchangpingqu'
+app.config['SECRET_KEY'] = 'Yoursecretkeygoeshere'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
