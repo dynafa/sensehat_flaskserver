@@ -1,0 +1,671 @@
+{% extends "base.html" %}
+{% block body %}
+    <style>
+    * {
+    margin:0; padding:0; box-sizing:border-box;
+    }
+    body {
+        background: url("https://ehvwda.dm.files.1drv.com/y4muH02wZRVu-NLSj5EP_9w0FLWlQWILVIbCqw35WaYgvnxfuabxBjQWSeSKb7kr8u8cVCn6HUi4TMH2cDwtBRMlh_UIkPd3ifYhKpCFoK-fZ8YhvLbWK4m_TLA6rALtIV8W2FSbGLC3yWSORpBMF7uIG9Uy3vVZC0MzIWKBLPn_Fse7gI5k5MEbdENCL6STXrl6KJiJHk4soH0D7cXpAyUaA?width=2133&height=1200&cropmode=none");
+    }
+    .tablink {
+        background-color: rgba(0,0,0,0.4);
+        border-radius: 30px;
+        color: white;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 20px;
+        font-size: 1.5em;
+        font-family: 'Orbitron';
+    }
+
+    .active, .tablink:hover {
+        background-color: rgba(50,50,50,0.8);
+    }
+
+
+    /* Style the tab content */
+    .tabcontent {
+        font-family: 'Orbitron';
+        color: white;
+        display: none;
+        text-align: left;
+        padding: 30px 0 30px 15%;
+        background-color: rgba(0,0,0,0.5);
+    }
+    #time {
+        font-size: 2em;
+    }
+
+    .cont {
+        color: #fff;
+        max-width: 100%;
+        margin: 0 0 10px 15%;
+    }
+    .top_cont {
+        display: grid;
+        grid-template-columns: 20% 10% 10% 10% 10% 30%;
+        padding: 10px 0;
+    }
+    .graphs {
+        height: 600px;
+        width: 1200px;
+    }
+    img {
+        border: #00AA00 2px solid;
+        border-radius: 10px;
+        max-width: 100%;
+    }
+    iframe {
+        height: 800px;
+        width: 30%;
+    }
+    .control_grid {
+        padding-top: 100px;
+        display: grid;
+        grid-template-columns: auto auto;
+        max-width: 70%;
+    }
+    .control_grid2 {
+        padding-top: 100px;
+    }
+    #Controls_div {
+        display: grid;
+        grid-template-columns: 30% auto auto;
+        max-width: 100%;
+        padding-top: 20px;
+    }
+    .camera_grid {
+        display: grid;
+        grid-template-columns: 70% auto;
+    }
+    .sense_output {
+        font-family: 'Baumans';
+        padding: 25px;
+        font-size: 1.2em;
+    }
+    .sense_output2{
+        color: #00ecff;
+        font-family: 'Comfortaa';
+        padding: 10px;
+        font-size: 1.2em;
+    }
+    .time_output {
+        font-family: 'Orbitron';
+        padding: 25px;
+    }
+    #sense_led {
+        max-width: 70%;
+    }
+    #sensor_info {
+
+    }
+    #graph5, #graph4 {
+
+    }
+    </style>
+    <script src="../static/js/plotly-latest.min.js"></script>
+    <div class="cont">
+        <div class="top_cont">
+            <div class="time_output" id="time" onclick="get_all_data(savedData.count);"></div>
+            <div class="sense_output" id="fanStatus2">FAN: OFF</div>
+            <div class="sense_output" id="minTemptop"></div>
+            <div class="sense_output" id="maxTemptop"></div>
+            <div class="sense_output">TEMP: <a id="tempTop"></a></div>
+            <div class="sense_output"><i class="fa fa-user"> </i><a id="currentuser"></a></div>
+        </div>
+        <div id="button_menu">
+            <button class="tablink" onclick="openTab('Temp')">Temp</button>
+            <button class="tablink" onclick="openTab('Pressure')">Air Pressure</button>
+            <button class="tablink" onclick="openTab('Humidity')">Humidity</button>
+            <button class="tablink" onclick="openTab('DewPoint')">Dew Point</button>
+            <button class="tablink" onclick="openTab('Combined')">Live Data</button>
+            <button class="tablink" onclick="openTab('Compass')">Compass</button>
+            <button class="tablink" onclick="openTab('LEDS')">LEDS</button>
+            <button class="tablink" onclick="openTab('Controls')" id="defaultOpen">Controls</button>
+        </div>
+    </div>
+    <div id="Temp" class="tabcontent">
+        <div class="graphs" id="graph"></div>
+    </div>
+
+    <div id="Pressure" class="tabcontent">
+        <div class="graphs" id="graph2"></div>
+    </div>
+
+    <div id="Humidity" class="tabcontent">
+        <div class="graphs" id="graph3"></div>
+    </div>
+    <div id="Combined" class="tabcontent">
+        <div class="graphs" id="graph4"></div>
+        <div class="graphs" id="graph5"></div>
+    </div>
+    <div id="Compass" class="tabcontent">
+        <div class="graphs" id="graph6"></div>
+        <div class="graphs" id="graph7"></div>
+    </div>
+    <div id="DewPoint" class="tabcontent">
+        <div class="graphs" id="graph8"></div>
+    </div>
+    <div id="Controls" class="tabcontent">
+        <div id="Controls_div">
+            <div id="sensor_info">
+                <div class="sense_output" style="font-size: 2em">Control panel</div>
+                <div class="sense_output">Temperature: <a class="sense_output2" id="temp"></a></div>
+                <div class="sense_output">Temp from pressure: <a class="sense_output2" id="temp_p"></a></div>
+                <div class="sense_output">Temp from humidity: <a class="sense_output2" id="temp_h"></a></div>
+                <div class="sense_output">Pressure: <a class="sense_output2" id="pressure"></a></div>
+                <div class="sense_output">Humidity: <a class="sense_output2" id="humidity"></a></div>
+                <div class="sense_output">Dew Point: <a class="sense_output2" id="dew_point"></a></div>
+                <a class="sense_output" href="../static/Assignment_latex/IoT-Assignment2.pdf" target="_blank">PDF</a>
+            </div>
+            <div class="control_grid">
+                <div class="sense_output" id="fanStatus">Fan: Off</div>
+                <div>
+                    <button class="tablink" onclick="switchFan('on')">ON</button>
+                    <button class="tablink" onclick="switchFan('off')">OFF</button>
+                </div>
+                <div class="sense_output" id="autoTempstate">Auto temp: 0</div>
+                <div>
+                    <button class="tablink" onclick="updateAutotempstate()">Toggle</button>
+                </div>
+                <div class="sense_output" id="autoDatastate">Auto data: 0</div>
+                <div>
+                    <button class="tablink" onclick="updateAutodatastate()">Toggle</button>
+                </div>
+                <div class="sense_output" id="minTemp"></div>
+                <div>
+                    <button class="tablink" onclick="minTempadjust(-1)"> + </button>
+                    <button class="tablink" onclick="minTempadjust(1)"> - </button>
+                </div>
+                <div class="sense_output" id="maxTemp"></div>
+                <div>
+                    <button class="tablink" onclick="maxTempadjust(-1)"> + </button>
+                    <button class="tablink" onclick="maxTempadjust(1)"> - </button>
+                </div>
+            </div>
+            <div class="control_grid2">
+                <div class="sense_output">Total time stored: <a class="sense_output2" id="savedData_servertime"></a></div>
+                <div class="sense_output">Total time DL: <a class="sense_output2" id="savedData_clienttime"></a></div>
+                <div class="sense_output">Interval: <a class="sense_output2" id="step"></a></div>
+                <div>
+                    <button class="tablink" onclick="set_step(1)"> + </button>
+                    <button class="tablink" onclick="set_step(-1)"> - </button>
+                </div>
+                <div>
+                    <button class="tablink" onclick="get_all_data(); openTab('Temp');"> Update </button>
+                </div>
+                <div class="sense_output">Time delay: <a class="sense_output2" id="timeout"></a></div>
+                <div>
+                    <button class="tablink" onclick="set_timeout(100)"> + </button>
+                    <button class="tablink" onclick="set_timeout(-100)"> - </button>
+                </div>
+                <div></div>
+
+
+            </div>
+        </div>
+    </div>
+    <div id="LEDS" class="tabcontent camera_grid">
+{#        <div>#}
+{#            <img onclick="getimage()" id="image"/>#}
+{#        </div>#}
+        <div id="sense_led">
+            <div class="container" onload="insertIcon('pixelpanel')">
+                <div class="menu">
+                    <div class="topbtns" onclick="invertpanel('pixelpanel');">INVERT</div>
+                    <div class="topbtns" onclick="normalizePixelAgg();">CLEAR</div>
+                    <div class="topbtns" id="modebtn" onclick="toggleDrawmode();">MODE</div>
+                    <div class="topbtns" onclick="showVector(); ">Vector</div>
+                    <div class="topbtns" onclick="hideDebug(); ">Debug</div>
+                </div>
+
+                <div class="slidecontainer">
+                    <input type="range" min="0" max="255" value="128" class="slider" id="REDrange">
+                    <input type="range" min="0" max="255" value="128" class="slider" id="GREENrange">
+                    <input type="range" min="0" max="255" value="128" class="slider" id="BLUErange">
+                    <div class="colorvalues" id="combined_color">
+                        <div id="REDvalue">RED </div>
+                        <div id="GREENvalue">GREEN </div>
+                        <div id="BLUEvalue">BLUE </div>
+                    </div>
+                </div>
+                <div id="mainpanel" class="_64bit_panel">
+                    <div class="pixelpanel" id="pixel0" onclick="pushChange(7, 0, pixelMatrix.pixel0);"></div>
+                    <div class="pixelpanel" id="pixel1" onclick="pushChange(7, 1, pixelMatrix.pixel1);"></div>
+                    <div class="pixelpanel" id="pixel2" onclick="pushChange(7, 2, pixelMatrix.pixel2);"></div>
+                    <div class="pixelpanel" id="pixel3" onclick="pushChange(7, 3, pixelMatrix.pixel3);"></div>
+                    <div class="pixelpanel" id="pixel4" onclick="pushChange(7, 4, pixelMatrix.pixel4);"></div>
+                    <div class="pixelpanel" id="pixel5" onclick="pushChange(7, 5, pixelMatrix.pixel5);"></div>
+                    <div class="pixelpanel" id="pixel6" onclick="pushChange(7, 6, pixelMatrix.pixel6);"></div>
+                    <div class="pixelpanel" id="pixel7" onclick="pushChange(7, 7, pixelMatrix.pixel7);"></div>
+                    <div class="pixelpanel" id="pixel8" onclick="pushChange(6, 0, pixelMatrix.pixel8);"></div>
+                    <div class="pixelpanel" id="pixel9" onclick="pushChange(6, 1, pixelMatrix.pixel9);"></div>
+                    <div class="pixelpanel" id="pixel10" onclick="pushChange(6, 2, pixelMatrix.pixel10);"></div>
+                    <div class="pixelpanel" id="pixel11" onclick="pushChange(6, 3, pixelMatrix.pixel11);"></div>
+                    <div class="pixelpanel" id="pixel12" onclick="pushChange(6, 4, pixelMatrix.pixel12);"></div>
+                    <div class="pixelpanel" id="pixel13" onclick="pushChange(6, 5, pixelMatrix.pixel13);"></div>
+                    <div class="pixelpanel" id="pixel14" onclick="pushChange(6, 6, pixelMatrix.pixel14);"></div>
+                    <div class="pixelpanel" id="pixel15" onclick="pushChange(6, 7, pixelMatrix.pixel15);"></div>
+                    <div class="pixelpanel" id="pixel16" onclick="pushChange(5, 0, pixelMatrix.pixel16);"></div>
+                    <div class="pixelpanel" id="pixel17" onclick="pushChange(5, 1, pixelMatrix.pixel17);"></div>
+                    <div class="pixelpanel" id="pixel18" onclick="pushChange(5, 2, pixelMatrix.pixel18);"></div>
+                    <div class="pixelpanel" id="pixel19" onclick="pushChange(5, 3, pixelMatrix.pixel19);"></div>
+                    <div class="pixelpanel" id="pixel20" onclick="pushChange(5, 4, pixelMatrix.pixel20);"></div>
+                    <div class="pixelpanel" id="pixel21" onclick="pushChange(5, 5, pixelMatrix.pixel21);"></div>
+                    <div class="pixelpanel" id="pixel22" onclick="pushChange(5, 6, pixelMatrix.pixel22);"></div>
+                    <div class="pixelpanel" id="pixel23" onclick="pushChange(5, 7, pixelMatrix.pixel23);"></div>
+                    <div class="pixelpanel" id="pixel24" onclick="pushChange(4, 0, pixelMatrix.pixel24);"></div>
+                    <div class="pixelpanel" id="pixel25" onclick="pushChange(4, 1, pixelMatrix.pixel25);"></div>
+                    <div class="pixelpanel" id="pixel26" onclick="pushChange(4, 2, pixelMatrix.pixel26);"></div>
+                    <div class="pixelpanel" id="pixel27" onclick="pushChange(4, 3, pixelMatrix.pixel27);"></div>
+                    <div class="pixelpanel" id="pixel28" onclick="pushChange(4, 4, pixelMatrix.pixel28);"></div>
+                    <div class="pixelpanel" id="pixel29" onclick="pushChange(4, 5, pixelMatrix.pixel29);"></div>
+                    <div class="pixelpanel" id="pixel30" onclick="pushChange(4, 6, pixelMatrix.pixel30);"></div>
+                    <div class="pixelpanel" id="pixel31" onclick="pushChange(4, 7, pixelMatrix.pixel31);"></div>
+                    <div class="pixelpanel" id="pixel32" onclick="pushChange(3, 0, pixelMatrix.pixel32);"></div>
+                    <div class="pixelpanel" id="pixel33" onclick="pushChange(3, 1, pixelMatrix.pixel33);"></div>
+                    <div class="pixelpanel" id="pixel34" onclick="pushChange(3, 2, pixelMatrix.pixel34);"></div>
+                    <div class="pixelpanel" id="pixel35" onclick="pushChange(3, 3, pixelMatrix.pixel35);"></div>
+                    <div class="pixelpanel" id="pixel36" onclick="pushChange(3, 4, pixelMatrix.pixel36);"></div>
+                    <div class="pixelpanel" id="pixel37" onclick="pushChange(3, 5, pixelMatrix.pixel37);"></div>
+                    <div class="pixelpanel" id="pixel38" onclick="pushChange(3, 6, pixelMatrix.pixel38);"></div>
+                    <div class="pixelpanel" id="pixel39" onclick="pushChange(3, 7, pixelMatrix.pixel39);"></div>
+                    <div class="pixelpanel" id="pixel40" onclick="pushChange(2, 0, pixelMatrix.pixel40);"></div>
+                    <div class="pixelpanel" id="pixel41" onclick="pushChange(2, 1, pixelMatrix.pixel41);"></div>
+                    <div class="pixelpanel" id="pixel42" onclick="pushChange(2, 2, pixelMatrix.pixel42);"></div>
+                    <div class="pixelpanel" id="pixel43" onclick="pushChange(2, 3, pixelMatrix.pixel43);"></div>
+                    <div class="pixelpanel" id="pixel44" onclick="pushChange(2, 4, pixelMatrix.pixel44);"></div>
+                    <div class="pixelpanel" id="pixel45" onclick="pushChange(2, 5, pixelMatrix.pixel45);"></div>
+                    <div class="pixelpanel" id="pixel46" onclick="pushChange(2, 6, pixelMatrix.pixel46);"></div>
+                    <div class="pixelpanel" id="pixel47" onclick="pushChange(2, 7, pixelMatrix.pixel47);"></div>
+                    <div class="pixelpanel" id="pixel48" onclick="pushChange(1, 0, pixelMatrix.pixel48);"></div>
+                    <div class="pixelpanel" id="pixel49" onclick="pushChange(1, 1, pixelMatrix.pixel49);"></div>
+                    <div class="pixelpanel" id="pixel50" onclick="pushChange(1, 2, pixelMatrix.pixel50);"></div>
+                    <div class="pixelpanel" id="pixel51" onclick="pushChange(1, 3, pixelMatrix.pixel51);"></div>
+                    <div class="pixelpanel" id="pixel52" onclick="pushChange(1, 4, pixelMatrix.pixel52);"></div>
+                    <div class="pixelpanel" id="pixel53" onclick="pushChange(1, 5, pixelMatrix.pixel53);"></div>
+                    <div class="pixelpanel" id="pixel54" onclick="pushChange(1, 6, pixelMatrix.pixel54);"></div>
+                    <div class="pixelpanel" id="pixel55" onclick="pushChange(1, 7, pixelMatrix.pixel55);"></div>
+                    <div class="pixelpanel" id="pixel56" onclick="pushChange(0, 0, pixelMatrix.pixel56);"></div>
+                    <div class="pixelpanel" id="pixel57" onclick="pushChange(0, 1, pixelMatrix.pixel57);"></div>
+                    <div class="pixelpanel" id="pixel58" onclick="pushChange(0, 2, pixelMatrix.pixel58);"></div>
+                    <div class="pixelpanel" id="pixel59" onclick="pushChange(0, 3, pixelMatrix.pixel59);"></div>
+                    <div class="pixelpanel" id="pixel60" onclick="pushChange(0, 4, pixelMatrix.pixel60);"></div>
+                    <div class="pixelpanel" id="pixel61" onclick="pushChange(0, 5, pixelMatrix.pixel61);"></div>
+                    <div class="pixelpanel" id="pixel62" onclick="pushChange(0, 6, pixelMatrix.pixel62);"></div>
+                    <div class="pixelpanel" id="pixel63" onclick="pushChange(0, 7, pixelMatrix.pixel63);"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+<script>
+{#let senseObj = {temp: 0,#}
+    {#                ext_temp: 0,#}
+    {#                temp_p: 0,#}
+    {#                temp_h: 0,#}
+    {#                humidity: 0,#}
+    {#                pressure: 0,#}
+    {#                compass: 0,#}
+    {#                orientation: { pitch: 0, roll: 0, yaw: 0 },#}
+    {#                compass_raw: { x: 0, y: 0, z: 0 },#}
+    {#                gyro: { pitch: 0, roll: 0, yaw: 0 },#}
+    {#                accel: { pitch: 0, roll: 0, yaw: 0 },#}
+    {#                tempmin: 22,#}
+    {#                tempmax: 24,#}
+    {#/};#}
+    // Create objects for client side environment
+    let fanObj = {
+        status: 0
+    };
+    let autoTemp = {
+        enabled: false
+    };
+    let savedData = {
+        count: 0,
+        clientcount: 1,
+        step: 60
+    };
+    let autoData = {
+        enabled: false,
+        timeout: 1000
+    };
+    let senseObj = {
+        compass_raw: {
+            x: 0,
+            y: 0,
+            z: 0
+        },
+        tempmin: 22,
+        tempmax: 24,
+    };
+    // Collect data and make function calls to initialize
+    // text and data in fields in DOM and graphs
+    set_step(0);
+    get_count();
+    showMinmax();
+    getFanstate();
+    confirmAuthentication();
+    // Create graphs for data to be visualized upon
+    plotconfig = {
+        paper_bgcolor: 'rgba(20,20,20,0.6)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+    };
+    Plotly.plot('graph', [{y: [],  marker: {color: '#fff'}},{y: [], marker: {color: '#fff'}},{y: [], marker: {color: '#fff'}}], plotconfig);
+    Plotly.plot('graph2', [{y: [], marker: {color: '#fff'}}], plotconfig);
+    Plotly.plot('graph3', [{y: [], marker: {color: '#fff'}}], plotconfig);
+    Plotly.plot('graph4', [{y: [], marker: {color: '#fff'}},{y: [], marker: {color: '#fff'}},{y: [], marker: {color: '#fff'}},{y: [], marker: {color: '#fff'}},{y: [], marker: {color: '#fff'}}], plotconfig);
+    Plotly.plot('graph5', [{y: [], marker: {color: '#fff'}}], plotconfig);
+    Plotly.plot('graph6', [{y: [],  marker: {color: '#fff'}},{y: [], marker: {color: '#fff'}},{y: [], marker: {color: '#fff'}}], plotconfig);
+    Plotly.plot('graph7', [{y: [], marker: {color: '#fff'}}], plotconfig);
+    Plotly.plot('graph8', [{y: [], marker: {color: '#fff'}}], plotconfig);
+
+    let cnt = 0;
+
+    // Create a loop which continually gets JSON data from server about sensor states
+    setInterval( function() {
+        if (autoData.enabled) {
+            fetchAlldata();
+            // Plots latest temperature data onto 1st graph
+            {#Plotly.extendTraces('graph', {#}
+            {#    y: [[senseObj.temp],[senseObj.temp_p],[senseObj.temp_h],[senseObj.ext_temp]]#}
+            {#/}, [0, 1, 2, 3]);#}
+            {#// Plots latest pressure data onto 2nd graph#}
+            {#Plotly.extendTraces('graph2', {#}
+            {#    y : [[senseObj.pressure]]#}
+            {#/}, [0]);#}
+            {#// Plots latest humidity data onto 3rd graph#}
+            {#Plotly.extendTraces('graph3', {#}
+            {#    y : [[senseObj.humidity]]#}
+            {#/}, [0]);#}
+            Plotly.extendTraces('graph5', {
+                y : [[senseObj.pressure]]
+            }, [0]);
+            // Plots latest combined temperature and humidity data onto 4th graph
+            Plotly.extendTraces('graph4', {
+                y: [[senseObj.temp],[senseObj.temp_p],[senseObj.temp_h],[senseObj.humidity], [senseObj.dew_point]]
+            }, [0, 1, 2, 3, 4]);
+            Plotly.extendTraces('graph6', {
+                y: [[senseObj.compass_raw.x],[senseObj.compass_raw.y],[senseObj.compass_raw.z]]
+            }, [0, 1, 2]);
+            // Plots latest compass data onto 7th graph
+            {#Plotly.extendTraces('graph7', {#}
+            {#    y : [[senseObj.compass]]#}
+            {#/}, [0]);#}
+            cnt++;
+        }
+        // Allows 1st temperature graph to always display a certain width across
+        {#if(cnt > 500) {#}
+        {#    Plotly.relayout('graph', {#}
+        {#        xaxis: {#}
+        {#            range: [cnt - 500, cnt]#}
+        {#        }#}
+        {#    });#}
+        {#/}#}
+        // When AutoTemp is enabled, this function will check if the
+        // min or max temps are exceeded and activate the fan if neccessary
+        if (autoTemp.enabled) {
+            autoTempfunc();
+        }
+    }, autoData.timeout);
+
+    function autoTempfunc() {
+        if (cnt % 200 && senseObj.temp > senseObj.tempmax && !fanObj.status){
+                switchFan('on');
+                fanObj.status = 0;
+            } else if (senseObj.temp < senseObj.tempmin && fanObj.status){
+                switchFan('off');
+                fanObj.status = 1;
+            }
+    }
+
+    function updateAutodatastate() {
+        autoData.enabled = 1 - autoData.enabled;
+        document.getElementById('autoDatastate').innerText = 'Auto data: ' + autoData.enabled;
+    }
+
+    function updateAutotempstate() {
+        autoTemp.enabled = 1 - autoTemp.enabled;
+        document.getElementById('autoTempstate').innerText = 'Auto temp: ' + autoTemp.enabled;
+    }
+
+    function showMinmax() {
+        $('#minTemp').text('Min temp: ' + senseObj.tempmin);
+        $('#maxTemp').text('Max temp: ' + senseObj.tempmax);
+        $('#minTemptop').text('MIN: ' + senseObj.tempmin);
+        $('#maxTemptop').text('MAX: ' + senseObj.tempmax);
+    }
+
+    function minTempadjust(val) {
+        senseObj.tempmin -= val;
+        showMinmax();
+    }
+
+    function maxTempadjust(val) {
+        senseObj.tempmax -= val;
+        showMinmax();
+    }
+    function fetchAlldata() {
+        $.ajax({
+            url: '/api/current/sensedata',
+            method: "GET",
+            success: function (data) {
+                senseObj.temp = parseFloat(data['temp']);
+                $('#temp').text(senseObj.temp.toFixed(4));
+                $('#tempTop').text(Math.trunc(data['temp']));
+                senseObj.temp_p = parseFloat(data['temp_p']);
+                $('#temp_p').text(senseObj.temp_p.toFixed(4));
+                senseObj.temp_h = parseFloat(data['temp_h']);
+                $('#temp_h').text(senseObj.temp_h.toFixed(4));
+                senseObj.humidity = parseFloat(data['humidity']);
+                $('#humidity').text(senseObj.humidity.toFixed(4));
+                senseObj.pressure = parseFloat(data['pressure']);
+                senseObj.compass = parseFloat(data['compass']);
+                {#senseObj.gyro.pitch = parseFloat(data['gyro']['pitch']);#}
+                {#senseObj.gyro.roll = parseFloat(data['gyro']['roll']);#}
+                {#senseObj.gyro.yaw = parseFloat(data['gyro']['yaw']);#}
+                {#senseObj.accel.pitch = parseFloat(data['accel']['pitch']);#}
+                {#senseObj.accel.roll = parseFloat(data['accel']['roll']);#}
+                {#senseObj.accel.yaw = parseFloat(data['accel']['yaw']);#}
+                {#senseObj.orientation.pitch = parseFloat(data['orientation']['pitch']);#}
+                {#senseObj.orientation.roll = parseFloat(data['orientation']['roll']);#}
+                {#senseObj.orientation.yaw = parseFloat(data['orientation']['yaw']);#}
+                senseObj.compass_raw.x = parseFloat(data['compass_raw']['x']);
+                senseObj.compass_raw.y = parseFloat(data['compass_raw']['y']);
+                senseObj.compass_raw.z = parseFloat(data['compass_raw']['z']);
+                $('#pressure').text(senseObj.pressure.toFixed(4));
+                senseObj.dew_point = parseFloat(data['dew_point']);
+                $('#dew_point').text(senseObj.dew_point.toFixed(4));
+                changeTime();
+            }
+        });
+    }
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function changeTime() {
+        let timediv = document.getElementById('time');
+        timediv.style.color = '#87bdff';
+        await sleep(50);
+        timediv.style.color = '#fff';
+    }
+
+
+
+    function confirmAuthentication() {
+        $.ajax({
+            url: '/api/confirmlogin',
+            method: "GET",
+            success: function (data) {
+                $('#currentuser').text(data['user']);
+            }
+        });
+    }
+
+
+    function getimage() {
+        $.ajax({
+            url: '/api/image',
+            method: "GET",
+            success: function (data) {
+                document.getElementById('image').src = data;
+            }
+        });
+    }
+
+    let mainstatus = $('#fanStatus');
+    let topstatus = $('#fanStatus2');
+
+    function getFanstate() {
+        $.ajax({
+            url: '/api/fanstate',
+            method: 'GET',
+            success: function (data) {
+                console.log(data);
+                if (data['state'] === 'on') {
+                    switchFanstate('on')
+                } else {
+                    switchFanstate('off')
+                }
+            }
+        });
+    }
+    function switchFanstate(mode) {
+        if (mode === 'on') {
+            topstatus.css('color', '#0e0e0e');
+            topstatus.text('FAN: ON');
+            mainstatus.text("FAN: ON");
+        } else {
+            topstatus.css('color', '#ffffff');
+            topstatus.text('FAN: OFF');
+            mainstatus.text("FAN: OFF");
+        }
+    }
+    function switchFan(mode) {
+        $.ajax({
+            url: '/api/switch'+mode,
+            method: "GET",
+            success: function (data) {
+                switchFanstate(mode);
+                mainstatus.text("FAN: " + data);
+                topstatus.text("FAN: " + data);
+            }
+        });
+        fanObj.status = 1 - fanObj.status;
+    }
+
+    function get_count() {
+        $.ajax({
+            url: '/api/count/sensedata/',
+            method: "GET",
+            success: function (data) {
+                savedData.count = data["count"];
+            }
+        });
+    }
+    function get_step() {
+        return savedData.step;
+    }
+
+    function set_step(step) {
+        savedData.step += step;
+        $('#step').text(savedData.step)
+    }
+
+    function set_timeout(step) {
+        autoData.timeout += step;
+        $('#timeout').text(autoData.timeout)
+    }
+
+
+    function set_servertime() {
+        $('#savedData_servertime').text(((savedData.count * 0.5)/60).toFixed(2));
+    }
+
+    function set_clienttime() {
+        $('#savedData_clienttime').text(((savedData.clientcount * 0.5)/60).toFixed(2));
+    }
+
+    async function get_all_data() {
+        get_count();
+        let step = get_step();
+        for (let i = savedData.clientcount; i < savedData.count; i += step) {
+            $.ajax({
+                url: '/api/get/sensedata/'+i,
+                method: "GET",
+                success: function (data) {
+                    Plotly.extendTraces('graph', {
+                        y: [[data["temp"]],[data["temp_p"]],[data["temp_h"]]],
+                    }, [0, 1, 2]);
+                    Plotly.extendTraces('graph2', {
+                        y : [[data["pressure"]]]
+                    }, [0]);
+                    Plotly.extendTraces('graph3', {
+                        y : [[data["humidity"]]]
+                    }, [0]);
+                    Plotly.extendTraces('graph7', {
+                        y : [[data["compass"]]]
+                    }, [0]);
+                    Plotly.extendTraces('graph8', {
+                        y : [[data["dew_point"]]]
+                    }, [0]);
+                }
+            });
+            savedData.clientcount += step;
+            await sleep(500);
+        }
+        set_clienttime();
+        set_servertime();
+    }
+
+
+    function getTime(div, d) {
+        let time;
+        time = addZero(d.getHours())+" :"
+            +addZero(d.getMinutes())+" : "
+            +addZero(d.getSeconds());
+        div.innerText = time;
+    }
+    function addZero(i) {
+      if (i < 10) {
+          i = "0" + i;
+      }
+      return i;
+    }
+    var timediv = document.getElementById('time');
+    setInterval(function() {
+        var d = new Date();
+        getTime(timediv, d);
+    }, 1000);
+
+    function openTab(tabName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablink");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].style.backgroundColor = "";
+        }
+        document.getElementById(tabName).style.display = "block";
+    }
+    // Get the element with id="defaultOpen" and click on it
+    document.getElementById("defaultOpen").click();
+
+    var header = document.getElementById("button_menu");
+    var btns = header.getElementsByClassName("tablink");
+    for (var i = 0; i < btns.length; i++) {
+        btns[i].addEventListener("click", function() {
+        var current = document.getElementsByClassName("active");
+        current[0].className = current[0].className.replace(" active", "");
+        this.className += " active";
+        });
+    }
+
+
+</script>
+<script src="../static/js/sense_led.js"></script>
+{% endblock %}

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <script src="../static/js/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+            integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU"
+            crossorigin="anonymous">
+    <meta name="viewport" content="user-scalable=yes, width=device-width, initial-scale=1, maximum-scale=1">
+    <link href="../static/css/sense_led.css" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+</head>
+<style>
+    @import url('https://fonts.googleapis.com/css?family=Cabin:500i|Audiowide|Orbitron|Russo+One|Sirin+Stencil|Unica+One|Comfortaa|Baumans');
+</style>
+<body onload="loadingGraphic()">
+<style>
+    .navbar {
+        background-color: rgba(0,0,0,0.9);
+
+    }
+    .navbtn {
+        font-family: 'Unica One', cursive;
+        padding: 30px;
+        color: white;
+        font-size: 2em;
+        position: static;
+
+    }
+    .navbtn:hover {
+        color: #66cd61;
+        transition-duration: 600ms;
+    }
+    .hiddennav {
+        height: 0;
+        color: #fff;
+        font-family: 'Unica One', cursive;
+        font-size: 1em;
+        padding: 50px;
+        background-color: #00af89;
+        z-index: 10;
+        display: none;
+    }
+    #nb1 {
+
+    }
+</style>
+
+<div class="navbar">
+    <div class="menuicon" id="menubtn" onclick="main()">
+        <div class="bar1"></div>
+        <div class="bar2"></div>
+        <div class="bar3"></div>
+    </div>
+
+{#    <div class="navbar2" id="nb">#}
+{#        <div class="navbtn" onclick="chgwin('/')" id="nb1">DRAGONEYE</div>#}
+{#        <div class="navbtn" onclick="window.location='local'" id="nb2">Local</div>#}
+{#        <div class="navbtn" id="nb3">Global</div>#}
+{#        <div class="navbtn" id="nb4">KeyGen</div>#}
+{#        <div class="navbtn" id="nb5">Storage</div>#}
+{#        <div class="navbtn" id="nb6">Dynafa</div>#}
+{#    </div>#}
+
+</div>
+<script>
+    // var navbar = document.getElementById('nb1');
+    // navbar.addEventListener('click', showhidden);
+    var obj = createElement(1500);
+
+    function createElement(time){
+        var newObject = {};
+        newObject.bs = 0;
+        newObject.time = time;
+        return newObject;
+}
+    function showhidden() {
+        if (obj.bs === 1) {
+            $(".sidebar").animate({
+                width: "0px",
+            }, obj.time, 'easeInOutExpo').hide();
+            obj.bs = 0;
+
+        }
+        else {
+            $(".sidebar").animate({
+                width: "15%"
+            }, obj.time, 'easeInOutExpo').show();
+            obj.bs = 1;
+        }
+        console.log(obj.bs)
+    }
+
+    function chgwin(location) {
+        window.location = location
+    }
+</script>
+<!--<div class="block1">-->
+    <!--<div>-->
+    <!--</div>-->
+    <!--<div>-->
+        <!--<div class="title">Dynafa Cybernetics</div>-->
+        <!--<div class="subtitle">An AI security company.</div>-->
+    <!--</div>-->
+<!--</div>-->
+<!--<div class="front_page_separator">-->
+
+<!--</div>-->
+<div id="maindiv" class="animate-bottom">
+    {% block body %}
+    {% endblock %}
+</div>
+<script src="../static/js/jquery-ui.js"></script>
+<script src="../static/js/main.js"></script>
+</body>
+
+</html>
