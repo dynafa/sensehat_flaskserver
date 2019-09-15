@@ -1,1 +1,1 @@
-# sensehat_flaskserver
+# sensehat_webapp
