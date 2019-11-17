@@ -3,9 +3,6 @@ Full-stack web application that autonomously collects a dozen different weather 
 
 <img src="images/full-stack.jpg" width="90%">
 
-<img src="images/sensehat.png" width="25%">
-
-
 <img src="images/screenshot1.png" width="90%">
 <img src="images/screenshot2.png" width="90%">
 
