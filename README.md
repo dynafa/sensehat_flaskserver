@@ -3,14 +3,7 @@ Full-stack web application that autonomously collects a dozen different weather 
 
 <img src="images/sensehat.png" width="25%">
 
-
-```bash
-git clone https://github.com/dynafa/sensehat_webapp
-cd sensehat_webapp
-sudo chmod +x setup.sh
-./setup
-
-```
+![See documentation](https://github.com/dynafa/sensehat_webapp/blob/master/IoT-Assignment2.pdf)
 <img src="images/screenshot1.png" width="90%">
 <img src="images/screenshot2.png" width="90%">
 
